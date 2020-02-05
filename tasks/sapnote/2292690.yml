@@ -15,6 +15,8 @@
 #  yum:
 #    state: latest
 #    name: tuned-profiles-sap-hana
+ - name: Populate service facts
+    service_facts:
 
 - name: enable tuned
   service: name=tuned state=started enabled=yes
@@ -54,10 +56,20 @@
           state: present
           reload: yes
 
-- name: disable numad
-  service: name=numad state=stopped enabled=no
-  ignore_errors: True
-
+- name: Disable numad, ksm and ksmtuned daemon
+    service:
+      enabled: False
+      name: "{{ item }}"
+      state: stopped
+    when:
+    - item  in ansible_facts.services
+    - ansible_facts['distribution'] == 'RedHat'
+    - ansible_facts['distribution_major_version'] == "7"
+    loop:
+    - numad.service
+    - ksm.service
+    - ksmtuned.service
+    
 # Disable transparent hugepages
 # The following steps are  also done by the tuned-adm profile
 # but this makes sure it is done already at boottime
