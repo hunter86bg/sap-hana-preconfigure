@@ -16,7 +16,7 @@
 #    state: latest
 #    name: tuned-profiles-sap-hana
  - name: Populate service facts
-    service_facts:
+   service_facts:
 
 - name: enable tuned
   service: name=tuned state=started enabled=yes
